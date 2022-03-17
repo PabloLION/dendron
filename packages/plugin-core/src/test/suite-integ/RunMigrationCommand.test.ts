@@ -1,9 +1,5 @@
 import _ from "lodash";
-import {
-  ConfigUtils,
-  IntermediateDendronConfig,
-  WorkspaceType,
-} from "@dendronhq/common-all";
+import { ConfigUtils, WorkspaceType } from "@dendronhq/common-all";
 import sinon from "sinon";
 import * as vscode from "vscode";
 import { RunMigrationCommand } from "../../commands/RunMigrationCommand";
@@ -32,7 +28,7 @@ suite("RunMigrationCommand", function () {
       onInit: async ({ wsRoot }) => {
         const cmd = new RunMigrationCommand();
         // testing for explicitly delete key.
-        const rawConfig = DConfig.getRaw(wsRoot) as IntermediateDendronConfig;
+        const rawConfig = await DConfig.getRaw(wsRoot);
         expect(_.isUndefined(rawConfig.commands?.lookup)).toBeTruthy();
         sinon.stub(cmd, "gatherInputs").resolves({ version: "0.55.2" });
         const out = await cmd.run();

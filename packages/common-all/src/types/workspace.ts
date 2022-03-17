@@ -63,6 +63,11 @@ export type DVault = {
   seed?: string;
   /** Marks the vault as a self-contained vault. This is (hopefully) temporary until we eventually drop support for non-self contained vaults. */
   selfContained?: boolean;
+  /** Information about where the vault is published, if it is published */
+  publish?: {
+    url: string;
+    index?: string;
+  };
 };
 
 export type DWorkspace = {

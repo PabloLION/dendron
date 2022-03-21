@@ -74,6 +74,7 @@ import {
   setupBeforeAfter,
   withConfig,
 } from "../testUtilsV3";
+import { WSUtilsV2 } from "../../WSUtilsV2";
 
 const stubVaultPick = (vaults: DVault[]) => {
   const vault = _.find(vaults, { fsPath: "vault1" });
@@ -827,6 +828,39 @@ suite("NoteLookupCommand", function () {
         },
       });
     });
+
+    describeMultiWS(
+      "WHEN user creates new note with enableFullHierarchyNoteTitle == true",
+      {
+        modConfigCb: (config) => {
+          ConfigUtils.setWorkspaceProp(
+            config,
+            "enableFullHierarchyNoteTitle",
+            true
+          );
+          return config;
+        },
+        ctx,
+        preSetupHook: ENGINE_HOOKS_MULTI.setupBasicMulti,
+      },
+
+      () => {
+        test("THEN the new note title should reflect the full hierarchy name", async () => {
+          const cmd = new NoteLookupCommand();
+          await cmd.run({
+            noConfirm: true,
+            initialValue: "one.two.three",
+          });
+
+          const editor = VSCodeUtils.getActiveTextEditor()!;
+          const activeNote = WSUtilsV2.instance().getNoteFromDocument(
+            editor.document
+          );
+
+          expect(activeNote?.title).toEqual("One Two Three");
+        });
+      }
+    );
 
     test("new node with schema template", (done) => {
       runLegacyMultiWorkspaceTest({

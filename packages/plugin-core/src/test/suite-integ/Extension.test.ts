@@ -331,6 +331,7 @@ suite("GIVEN SetupWorkspace Command", function () {
             enableEditorDecorations: true,
             maxPreviewsCached: 10,
             maxNoteLength: 204800,
+            enableFullHierarchyNoteTitle: false,
           },
           preview: {
             enableFMTitle: true,

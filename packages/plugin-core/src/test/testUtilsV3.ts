@@ -31,6 +31,7 @@ import {
   DConfig,
   DendronEngineClient,
   DendronEngineV2,
+  Git,
   HistoryService,
   WorkspaceUtils,
 } from "@dendronhq/engine-server";
@@ -657,4 +658,20 @@ export function subscribeToEngineStateChange(
   const engine = ExtensionProvider.getEngine();
   const engineClient = engine as unknown as DendronEngineClient;
   return engineClient.onEngineNoteStateChanged(callback);
+}
+
+/** Create a self contained vault at `wsRoot`, and add it to git. */
+export async function createSelfContainedVaultWithGit(wsRoot: string) {
+  const setupWS = new SetupWorkspaceCommand();
+  await setupWS.execute({
+    rootDirRaw: wsRoot,
+    skipOpenWs: true,
+    skipConfirmation: true,
+    selfContained: true,
+    workspaceInitializer: new BlankInitializer(),
+  });
+  const git = new Git({ localUrl: wsRoot });
+  await git.init();
+  await git.addAll();
+  await git.commit({ msg: "start" });
 }

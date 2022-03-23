@@ -92,7 +92,7 @@ function AppVSCode({ Component, pageProps }: any) {
     if (msg.type === DMessageEnum.ON_DID_CHANGE_ACTIVE_TEXT_EDITOR) {
       console.log("useVSCodeMessage", msg);
       const cmsg = msg as OnDidChangeActiveTextEditorMsg;
-      const { sync, note, syncChangedNote } = cmsg.data;
+      const { sync, note, syncChangedNote, activeNote } = cmsg.data;
       if (sync) {
         // skip the initial ?
         logger.info({
@@ -107,7 +107,8 @@ function AppVSCode({ Component, pageProps }: any) {
         await ideDispatch(engineSlice.syncNote({ port, ws, note }));
       }
       logger.info({ ctx, msg: "syncEngine:post" });
-      ideDispatch(ideSlice.actions.setNoteActive(note));
+      const activeTextNote = activeNote;
+      ideDispatch(ideSlice.actions.setNoteActive(activeTextNote || note));
       logger.info({ ctx, msg: "setNote:post" });
     } else if (msg.type === ThemeMessageType.onThemeChange) {
       const cmsg = msg;

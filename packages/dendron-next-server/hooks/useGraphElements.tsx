@@ -43,7 +43,6 @@ const getLocalNoteGraphElements = ({
   noteActive: NoteProps | undefined;
 }): GraphElements => {
   const logger = createLogger("getLocalNoteGraphElements");
-
   if (_.isUndefined(noteActive)) {
     return {
       nodes: [],
@@ -52,6 +51,18 @@ const getLocalNoteGraphElements = ({
   }
 
   const activeNote = notes[noteActive.id];
+  console.log({
+    ctx: "getLocalNoteGraphElements",
+    notes,
+    noteActive,
+    activeNote,
+  });
+  if (_.isUndefined(activeNote)) {
+    return {
+      nodes: [],
+      edges: {},
+    };
+  }
   const parentNote = activeNote.parent ? notes[activeNote.parent] : undefined;
   const connectedNotes = NoteUtils.getNotesWithLinkTo({
     note: activeNote,
@@ -135,29 +146,31 @@ const getLocalNoteGraphElements = ({
 
   activeNote.children.forEach((child) => {
     const childNote = notes[child];
-    nodes.push({
-      data: {
-        id: child,
-        label: childNote.title,
-        group: "nodes",
-        color: getNoteColor({ fname: childNote.fname, notes }),
-        fname: childNote.fname,
-        stub: _.isUndefined(childNote.stub) ? false : childNote.stub,
-      },
-      classes: `${DEFAULT_NODE_CLASSES} ${getVaultClass(childNote.vault)}`,
-    });
+    if (childNote) {
+      nodes.push({
+        data: {
+          id: child,
+          label: childNote.title,
+          group: "nodes",
+          color: getNoteColor({ fname: childNote.fname, notes }),
+          fname: childNote.fname,
+          stub: _.isUndefined(childNote.stub) ? false : childNote.stub,
+        },
+        classes: `${DEFAULT_NODE_CLASSES} ${getVaultClass(childNote.vault)}`,
+      });
 
-    edges.hierarchy.push({
-      data: {
-        group: "edges",
-        id: `${activeNote.id}_${child}`,
-        source: activeNote.id,
-        target: child,
-        fname: activeNote.fname,
-        stub: _.isUndefined(activeNote.stub) ? false : activeNote.stub,
-      },
-      classes: `${DEFAULT_EDGE_CLASSES} hierarchy ${noteVaultClass}`,
-    });
+      edges.hierarchy.push({
+        data: {
+          group: "edges",
+          id: `${activeNote.id}_${child}`,
+          source: activeNote.id,
+          target: child,
+          fname: activeNote.fname,
+          stub: _.isUndefined(activeNote.stub) ? false : activeNote.stub,
+        },
+        classes: `${DEFAULT_EDGE_CLASSES} hierarchy ${noteVaultClass}`,
+      });
+    }
   });
 
   // Get notes linking to active note
@@ -587,7 +600,7 @@ const useGraphElements = ({
 
   // Get new elements if active note changes
   useEffect(() => {
-    if (type === "note" && engine.notes && isLocalGraph) {
+    if (type === "note" && engine.notes && isLocalGraph && noteActive) {
       setElements(
         getLocalNoteGraphElements({
           notes: engine.notes,

@@ -159,6 +159,7 @@ export class NoteGraphPanelFactory {
         data: {
           note,
           syncChangedNote: true,
+          activeNote: this._ext.wsUtils.getActiveNote(),
         },
         source: "vscode",
       } as OnDidChangeActiveTextEditorMsg);
@@ -182,6 +183,7 @@ export class NoteGraphPanelFactory {
     }
     if (basename.endsWith(".md")) {
       const note = this._ext.wsUtils.getNoteFromDocument(editor.document);
+      console.log({ note });
       if (note) {
         this.refresh(note);
       }

@@ -90,6 +90,7 @@ function AppVSCode({ Component, pageProps }: any) {
     const { port, ws } = getWorkspaceParamsFromQueryString();
 
     if (msg.type === DMessageEnum.ON_DID_CHANGE_ACTIVE_TEXT_EDITOR) {
+      console.log("useVSCodeMessage", msg);
       const cmsg = msg as OnDidChangeActiveTextEditorMsg;
       const { sync, note, syncChangedNote } = cmsg.data;
       if (sync) {
